@@ -7,21 +7,6 @@ const Modal = {
   },
 };
 const transactions = [
-  {
-    description: "Luz",
-    amount: -5000,
-    date: "20/03/2021",
-  },
-  {
-    description: "Água",
-    amount: -2000,
-    date: "20/03/2021",
-  },
-  {
-    description: "Computador",
-    amount: 200000,
-    date: "20/03/2021",
-  },
 ];
 const Transaction = {
   all: transactions,
@@ -61,16 +46,17 @@ const Transaction = {
   },
 };
 const Utils = {
-  formatDate(){
-    const splittedDate = date.split("-")
-
-    return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
-  },
 
   formatAmount(value){
       value = Number(value) * 100
 
       return value
+  },
+
+  formatDate(date){
+    const splittedDate = date.split("-")
+
+    return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
   },
 
   formatCurrecy(value){
@@ -136,9 +122,10 @@ const Form = {
   submit(event){
       event.preventDefault()
       try{
-       const transaction = Form.validateField()
-       saveTransaction(transaction)
-       clearFields()
+       Form.validateField()
+       const transaction = Form.formatValues()
+       Form.saveTransaction(transaction)
+       Form.clearFields()
        Modal.close
       }catch(error){
         alert(error.message)
@@ -150,22 +137,22 @@ const DOM = {
 
   addTransaction(transaction, index){
     const tr  = document.createElement('tr')
-    tr.innerHTML  = DOM.innerHTMLTransction(transaction)
+    tr.innerHTML  = DOM.innerHTMLTransction(transaction, index)
+    tr.dataset.index = index
 
     DOM.transactionsContainer.appendChild(tr)
   },
-  innerHTMLTransction(transaction){
+
+  innerHTMLTransction(transaction, index){
     const CSSclass  = transaction.amount > 0 ? 'income' : 'expense'
 
     const amount = Utils.formatCurrecy(transaction.amount)
 
     const html = `
-      
         <td class="description">${transaction.description}</td>
         <td class="${CSSclass}">${amount}</td>
         <td class="date">${transaction.date}</td>
-        <td><img src="./image/remover.png" alt=""></td>
-      
+        <td><img onclick="Transaction.remove(${index})" src="./image/remover.png" alt=""></td>
     `
     return html
   }, 
@@ -175,14 +162,12 @@ const DOM = {
     document.getElementById('totalDisplay').innerHTML = Utils.formatCurrecy(Transaction.total());
   },
   clearTransaction(){
-    DOM.transactionsContainer = ""
+    DOM.transactionsContainer.innerHTML = ""
   }
 }
 const App = {
   init(){
-    Transaction.all.forEach(transaction => {
-      DOM.addTransaction(transaction)
-    })
+    Transaction.all.forEach(DOM.addTransaction)
     
     DOM.updateBalance();
   },
