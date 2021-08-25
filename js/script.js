@@ -6,10 +6,18 @@ const Modal = {
     document.querySelector(".modal-overlay").classList.remove("active");
   },
 };
+const Storage = {
+  get(){
+    return JSON.parse(localStorage.getItem("dev.finances")) || []
+  },
+  set(transactions){
+    localStorage.setItem("dev.finances", JSON.stringify(transactions))
+  }
+}
 const transactions = [
 ];
 const Transaction = {
-  all: transactions,
+  all: Storage.get(),
 
   add(transaction){
     Transaction.all.push(transaction)
@@ -126,11 +134,11 @@ const Form = {
        const transaction = Form.formatValues()
        Form.saveTransaction(transaction)
        Form.clearFields()
-       Modal.close
+       Modal.close()
       }catch(error){
         alert(error.message)
       }
-    }
+  }
 }
 const DOM = {
   transactionsContainer: document.querySelector('#data-table tbody'),
@@ -170,6 +178,7 @@ const App = {
     Transaction.all.forEach(DOM.addTransaction)
     
     DOM.updateBalance();
+    Storage.set(Transaction.all)
   },
 
   reload(){
