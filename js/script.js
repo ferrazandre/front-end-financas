@@ -123,10 +123,23 @@ const Form = {
     }
   },
 
+  saveTransaction(transaction){
+    Transaction.add(transaction)  
+  },
+
+  clearFields(){
+    Form.description.value =""
+    Form.amount.value =""
+    Form.date.value =""
+  },
+
   submit(event){
       event.preventDefault()
       try{
-        Form.validateField()
+       const transaction = Form.validateField()
+       saveTransaction(transaction)
+       clearFields()
+       Modal.close
       }catch(error){
         alert(error.message)
       }
