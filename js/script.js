@@ -8,19 +8,16 @@ const Modal = {
 };
 const transactions = [
   {
-    id: 1,
     description: "Luz",
     amount: -5000,
     date: "20/03/2021",
   },
   {
-    id: 2,
     description: "Água",
     amount: -2000,
     date: "20/03/2021",
   },
   {
-    id: 3,
     description: "Computador",
     amount: 200000,
     date: "20/03/2021",
@@ -31,6 +28,12 @@ const Transaction = {
 
   add(transaction){
     Transaction.all.push(transaction)
+    App.reload()
+  },
+
+  remove(index){
+      Transaction.all.splice(index, 1)
+      App.reload()
   },
 
   incomes() {
@@ -102,12 +105,24 @@ const DOM = {
     document.getElementById('incomeDisplay').innerHTML = Utils.formatCurrecy(Transaction.incomes());
     document.getElementById('expenseDisplay').innerHTML = Utils.formatCurrecy(Transaction.expenses());
     document.getElementById('totalDisplay').innerHTML = Utils.formatCurrecy(Transaction.total());
-
+  },
+  clearTransaction(){
+    DOM.transactionsContainer = ""
   }
 }
+const App = {
+  init(){
+    Transaction.all.forEach(transaction => {
+      DOM.addTransaction(transaction)
+    })
+    
+    DOM.updateBalance();
+  },
 
-transactions.forEach(function(transaction){
-  DOM.addTransaction(transaction)
-})
+  reload(){
+      DOM.clearTransaction()
+      App.init()
+  }
+} 
 
-DOM.updateBalance();
+App.init()
